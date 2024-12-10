@@ -1,70 +1,70 @@
 import EventEmitter from "./event-emitter.js";
 
 const DeviceProfiles = [
+  /* POS-8022 and similar printers */
+  {
+    filters: [{ vendorId: 0x0483, productId: 0x5743 }],
 
-	/* POS-8022 and similar printers */
-	{
-		filters: [
-			{ vendorId: 0x0483, productId: 0x5743 },
-		],
-		
-		configuration:		1,
-		interface:			0,
+    configuration: 1,
+    interface: 0,
 
-		language:			'esc-pos',
-		codepageMapping:	'default'
-	},
-			
-	/* POS-5805, POS-8360 and similar printers */
-	{
-		filters: [
-			{ vendorId: 0x0416, productId: 0x5011 },
-		],
-		
-		configuration:		1,
-		interface:			0,
+    language: "esc-pos",
+    codepageMapping: "default",
+  },
 
-		language:			'esc-pos',
-		codepageMapping:	'zjiang'
-	},
-			
-	/* MPT-II and similar printers */
-	{
-		filters: [
-			{ vendorId: 0x0483, productId: 0x5840 },
-		],
-		
-		configuration:		1,
-		interface:			0,
+  // Zonerich
 
-		language:			'esc-pos',
-		codepageMapping:	'mpt'
-	},
-			
-	/* Samsung SRP */
-	{
-		filters: [
-			{ vendorId: 0x0419 }, { vendorId: 0x1504 }
-		],
-		
-		configuration:		1,
-		interface:			0,
+  {
+    filters: [{ vendorId: 0x0525, productId: 0xa702 }],
 
-		language:			'esc-pos',
-		codepageMapping:	'bixolon'
-	},
-			
-	/* Star */
-	{
-		filters: [
-			{ vendorId: 0x0519 }
-		],
-		
-		configuration:		1,
-		interface:			0,
-		
+    configuration: 1,
+    interface: 0,
 
-		/*
+    language: "esc-pos",
+    codepageMapping: "default",
+  },
+
+  /* POS-5805, POS-8360 and similar printers */
+  {
+    filters: [{ vendorId: 0x0416, productId: 0x5011 }],
+
+    configuration: 1,
+    interface: 0,
+
+    language: "esc-pos",
+    codepageMapping: "zjiang",
+  },
+
+  /* MPT-II and similar printers */
+  {
+    filters: [{ vendorId: 0x0483, productId: 0x5840 }],
+
+    configuration: 1,
+    interface: 0,
+
+    language: "esc-pos",
+    codepageMapping: "mpt",
+  },
+
+  /* Samsung SRP */
+  {
+    filters: [{ vendorId: 0x0419 }, { vendorId: 0x1504 }],
+
+    configuration: 1,
+    interface: 0,
+
+    language: "esc-pos",
+    codepageMapping: "bixolon",
+  },
+
+  /* Star */
+  {
+    filters: [{ vendorId: 0x0519 }],
+
+    configuration: 1,
+    interface: 0,
+
+    /*
 
 			vendorId	productId	productName
 
@@ -87,11 +87,11 @@ const DeviceProfiles = [
 
 		*/
 
-		language:			device => {
-								let language = 'star-line';
-								let name = device.productName;
+    language: (device) => {
+      let language = "star-line";
+      let name = device.productName;
 
-								/* 
+      /* 
 									Even though the product names are a bit messy, the best way to distinguish between 
 									models is by the product name. It is not possible to do it by the productId alone, 
 									as the same productId is used for different models supporting different languages.
@@ -102,268 +102,283 @@ const DeviceProfiles = [
 									TSP654 (STR_T-001) -> TSP650
 									Star TSP143IIIU -> TSP100III									
 								*/
-								
-								name = name.replace(/^Star\s+/i, '');
-								name = name.replace(/^TSP(1|4|6|7|8|10)(13|43)(.*)?$/, (m, p1, p2, p3) => 'TSP' + p1 + '00' + (p3 || ''));
-								name = name.replace(/^TSP(55|65)(1|4)(.*)?$/, (m, p1, p2, p3) => 'TSP' + p1 + '0' + (p3 || ''));
-								name = name.replace(/^TSP([0-9]+)(II|III|IV|V|VI)?(.*)?$/, (m, p1, p2) => 'TSP' + p1 + (p2 || ''));
 
-								switch(name) {
-									case 'TSP100IV':
-									case 'mPOP':
-									case 'mC-Label3':
-									case 'mC-Print3':
-									case 'mC-Print2':
-										language = 'star-prnt';
-										break;
+      name = name.replace(/^Star\s+/i, "");
+      name = name.replace(
+        /^TSP(1|4|6|7|8|10)(13|43)(.*)?$/,
+        (m, p1, p2, p3) => "TSP" + p1 + "00" + (p3 || "")
+      );
+      name = name.replace(
+        /^TSP(55|65)(1|4)(.*)?$/,
+        (m, p1, p2, p3) => "TSP" + p1 + "0" + (p3 || "")
+      );
+      name = name.replace(
+        /^TSP([0-9]+)(II|III|IV|V|VI)?(.*)?$/,
+        (m, p1, p2) => "TSP" + p1 + (p2 || "")
+      );
 
-									case 'TSP100':
-									case 'TSP100II':
-									case 'TSP100III':
-										language = 'star-graphics';
-										break;
+      switch (name) {
+        case "TSP100IV":
+        case "mPOP":
+        case "mC-Label3":
+        case "mC-Print3":
+        case "mC-Print2":
+          language = "star-prnt";
+          break;
 
-									case 'BSC10':
-									case 'BSC10BR':
-									case 'BSC10II':
-										language = 'esc-pos';
-										break;
-								}
+        case "TSP100":
+        case "TSP100II":
+        case "TSP100III":
+          language = "star-graphics";
+          break;
 
-								return language;
-							},
+        case "BSC10":
+        case "BSC10BR":
+        case "BSC10II":
+          language = "esc-pos";
+          break;
+      }
 
-		codepageMapping:	'star'
-	},
+      return language;
+    },
 
-	/* Epson */
-	{
-		filters: [
-			{ vendorId: 0x04b8 },
-		],
-		
-		configuration:		1,
-		interface:			0,
+    codepageMapping: "star",
+  },
 
-		language:			'esc-pos',
-		codepageMapping:	'epson'
-	},
+  /* Epson */
+  {
+    filters: [{ vendorId: 0x04b8 }],
 
-	/* Citizen */
-	{
-		filters: [
-			{ vendorId: 0x1d90 },
-		],
-		
-		configuration:		1,
-		interface:			0,
+    configuration: 1,
+    interface: 0,
 
-		language:			'esc-pos',
-		codepageMapping:	'citizen'
-	},
+    language: "esc-pos",
+    codepageMapping: "epson",
+  },
 
-	/* HP */
-	{
-		filters: [
-			{ vendorId: 0x05d9 },
-		],
+  /* Citizen */
+  {
+    filters: [{ vendorId: 0x1d90 }],
 
-		configuration:		1,
-		interface:			0,
+    configuration: 1,
+    interface: 0,
 
-		language:			'esc-pos',
-		codepageMapping:	'hp'
-	},
+    language: "esc-pos",
+    codepageMapping: "citizen",
+  },
 
-	/* Fujitsu */
+  /* HP */
+  {
+    filters: [{ vendorId: 0x05d9 }],
 
-	{
-		filters: [
-			{ vendorId: 0x04c5 },
-		],
+    configuration: 1,
+    interface: 0,
 
-		configuration:		1,
-		interface:			0,
+    language: "esc-pos",
+    codepageMapping: "hp",
+  },
 
-		language:			'esc-pos',
-		codepageMapping:	'epson'
-	},
-			
-	/* Dtronic */
-	{
-		filters: [
-			{ vendorId: 0x0fe6, productId: 0x811e },
-		],
-		
-		configuration:		1,
-		interface:			0,
+  /* Fujitsu */
 
-		language:			'esc-pos',
-		codepageMapping:	'epson'
-	},
+  {
+    filters: [{ vendorId: 0x04c5 }],
 
-	/* Xprinter */
-	{
-		filters: [
-			{ vendorId: 0x1fc9, productId: 0x2016 },
-		],
-		
-		configuration:		1,
-		interface:			0,
+    configuration: 1,
+    interface: 0,
 
-		language:			'esc-pos',
-		codepageMapping:	'xprinter'
-	}
-]
+    language: "esc-pos",
+    codepageMapping: "epson",
+  },
+
+  /* Dtronic */
+  {
+    filters: [{ vendorId: 0x0fe6, productId: 0x811e }],
+
+    configuration: 1,
+    interface: 0,
+
+    language: "esc-pos",
+    codepageMapping: "epson",
+  },
+
+  /* Xprinter */
+  {
+    filters: [{ vendorId: 0x1fc9, productId: 0x2016 }],
+
+    configuration: 1,
+    interface: 0,
+
+    language: "esc-pos",
+    codepageMapping: "xprinter",
+  },
+];
 
 class ReceiptPrinterDriver {}
 
 class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
+  #emitter;
 
-	#emitter;
-	
-	#device = null;
-	#profile = null;
-	#endpoints = {
-		input:		null,
-		output:		null
-	};
+  #device = null;
+  #profile = null;
+  #endpoints = {
+    input: null,
+    output: null,
+  };
 
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		this.#emitter = new EventEmitter();
+    this.#emitter = new EventEmitter();
 
-		navigator.usb.addEventListener('disconnect', event => {
-			if (this.#device == event.device) {
-				this.#emitter.emit('disconnected');
-			}
-		});
-	}
+    navigator.usb.addEventListener("disconnect", (event) => {
+      if (this.#device == event.device) {
+        this.#emitter.emit("disconnected");
+      }
+    });
+  }
 
-	async connect() {
-		try {
-			let device = await navigator.usb.requestDevice({ 
-				filters: DeviceProfiles.map(i => i.filters).reduce((a, b) => a.concat(b))
-			});
-			
-			if (device) {
-				await this.#open(device);
-			}
-		}
-		catch(error) {
-			console.log('Could not connect! ' + error);
-		}
-	}
+  async connect() {
+    try {
+      let device = await navigator.usb.requestDevice({
+        filters: DeviceProfiles.map((i) => i.filters).reduce((a, b) =>
+          a.concat(b)
+        ),
+      });
 
-	async reconnect(previousDevice) {
-		let devices = await navigator.usb.getDevices();
+      if (device) {
+        await this.#open(device);
+      }
+    } catch (error) {
+      console.log("Could not connect! " + error);
+    }
+  }
 
-		let device = devices.find(device => device.serialNumber == previousDevice.serialNumber);
+  async reconnect(previousDevice) {
+    let devices = await navigator.usb.getDevices();
 
-		if (!device) {
-			device = devices.find(device => device.vendorId == previousDevice.vendorId && device.productId == previousDevice.productId);
-		}
+    let device = devices.find(
+      (device) => device.serialNumber == previousDevice.serialNumber
+    );
 
-		if (device) {
-			await this.#open(device);
-		}
-	}
+    if (!device) {
+      device = devices.find(
+        (device) =>
+          device.vendorId == previousDevice.vendorId &&
+          device.productId == previousDevice.productId
+      );
+    }
 
-	async #open(device) {
-		this.#device = device;
+    if (device) {
+      await this.#open(device);
+    }
+  }
 
-		this.#profile = DeviceProfiles.find(
-			item => item.filters.some(
-				filter => filter.vendorId && filter.productId ? filter.vendorId == this.#device.vendorId && filter.productId == this.#device.productId : filter.vendorId == this.#device.vendorId
-			)
-		);
+  async #open(device) {
+    this.#device = device;
 
-		await this.#device.open();
-		await this.#device.selectConfiguration(this.#profile.configuration);
-		await this.#device.claimInterface(this.#profile.interface);
-		
-		let iface = this.#device.configuration.interfaces.find(i => i.interfaceNumber == this.#profile.interface);
+    this.#profile = DeviceProfiles.find((item) =>
+      item.filters.some((filter) =>
+        filter.vendorId && filter.productId
+          ? filter.vendorId == this.#device.vendorId &&
+            filter.productId == this.#device.productId
+          : filter.vendorId == this.#device.vendorId
+      )
+    );
 
-		this.#endpoints.output = iface.alternate.endpoints.find(e => e.direction == 'out');
-		this.#endpoints.input = iface.alternate.endpoints.find(e => e.direction == 'in');
-		
-		await this.#device.reset();
+    await this.#device.open();
+    await this.#device.selectConfiguration(this.#profile.configuration);
+    await this.#device.claimInterface(this.#profile.interface);
 
-		this.#emitter.emit('connected', {
-			type:				'usb',
-			manufacturerName: 	this.#device.manufacturerName,
-			productName: 		this.#device.productName,
-			serialNumber: 		this.#device.serialNumber,
-			vendorId: 			this.#device.vendorId,
-			productId: 			this.#device.productId,			
-			language: 			await this.#evaluate(this.#profile.language),
-			codepageMapping:	await this.#evaluate(this.#profile.codepageMapping)
-		});
-	}
+    let iface = this.#device.configuration.interfaces.find(
+      (i) => i.interfaceNumber == this.#profile.interface
+    );
 
-	async #evaluate(expression) {
-		if (typeof expression == 'function') {
-			return await expression(this.#device);
-		}
+    this.#endpoints.output = iface.alternate.endpoints.find(
+      (e) => e.direction == "out"
+    );
+    this.#endpoints.input = iface.alternate.endpoints.find(
+      (e) => e.direction == "in"
+    );
 
-		return expression;
-	}
+    await this.#device.reset();
 
-	async listen() {
-		if (this.#endpoints.input) {
-			this.#read();
-			return true;
-		}
-	}
+    this.#emitter.emit("connected", {
+      type: "usb",
+      manufacturerName: this.#device.manufacturerName,
+      productName: this.#device.productName,
+      serialNumber: this.#device.serialNumber,
+      vendorId: this.#device.vendorId,
+      productId: this.#device.productId,
+      language: await this.#evaluate(this.#profile.language),
+      codepageMapping: await this.#evaluate(this.#profile.codepageMapping),
+    });
+  }
 
-	async #read() {
-		if (!this.#device) {
-			return;
-		}
+  async #evaluate(expression) {
+    if (typeof expression == "function") {
+      return await expression(this.#device);
+    }
 
-		try {
-			const result = await this.#device.transferIn(this.#endpoints.input.endpointNumber, 64);
+    return expression;
+  }
 
-			if (result instanceof USBInTransferResult) {
-				if (result.data.byteLength) {
-					this.#emitter.emit('data', result.data);
-				}
-			}
+  async listen() {
+    if (this.#endpoints.input) {
+      this.#read();
+      return true;
+    }
+  }
 
-			this.#read();
-		} catch(e) {
-		}
-	}
+  async #read() {
+    if (!this.#device) {
+      return;
+    }
 
-	async disconnect() {
-		if (!this.#device) {
-			return;
-		}
+    try {
+      const result = await this.#device.transferIn(
+        this.#endpoints.input.endpointNumber,
+        64
+      );
 
-		await this.#device.close();
+      if (result instanceof USBInTransferResult) {
+        if (result.data.byteLength) {
+          this.#emitter.emit("data", result.data);
+        }
+      }
 
-		this.#device = null;
-		this.#profile = null;
+      this.#read();
+    } catch (e) {}
+  }
 
-		this.#emitter.emit('disconnected');
-	}
-	
-	async print(command) {
-		if (this.#device && this.#endpoints.output) {
-			try {
-				await this.#device.transferOut(this.#endpoints.output.endpointNumber, command);
-			}
-			catch(e) {
-				console.log(e);
-			}
-		}
-	}
+  async disconnect() {
+    if (!this.#device) {
+      return;
+    }
 
-	addEventListener(n, f) {
-		this.#emitter.on(n, f);
-	}
+    await this.#device.close();
+
+    this.#device = null;
+    this.#profile = null;
+
+    this.#emitter.emit("disconnected");
+  }
+
+  async print(command) {
+    if (this.#device && this.#endpoints.output) {
+      try {
+        await this.#device.transferOut(
+          this.#endpoints.output.endpointNumber,
+          command
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+
+  addEventListener(n, f) {
+    this.#emitter.on(n, f);
+  }
 }
-
 
 export default WebUSBReceiptPrinter;
