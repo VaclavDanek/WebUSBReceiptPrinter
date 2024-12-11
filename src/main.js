@@ -237,6 +237,10 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
     });
   }
 
+  get device() {
+    return this.#device;
+  }
+
   async connect() {
     try {
       let device = await navigator.usb.requestDevice({
