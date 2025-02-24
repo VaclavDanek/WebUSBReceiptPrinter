@@ -13,7 +13,6 @@ const DeviceProfiles = [
   },
 
   // Zonerich
-
   {
     filters: [{ vendorId: 0x0525, productId: 0xa702 }],
 
@@ -92,16 +91,16 @@ const DeviceProfiles = [
       let name = device.productName;
 
       /* 
-									Even though the product names are a bit messy, the best way to distinguish between 
-									models is by the product name. It is not possible to do it by the productId alone, 
-									as the same productId is used for different models supporting different languages.
+        Even though the product names are a bit messy, the best way to distinguish between 
+        models is by the product name. It is not possible to do it by the productId alone, 
+        as the same productId is used for different models supporting different languages.
 
-									But we do need to normalize the names a bit, as they are not consistent.
+        But we do need to normalize the names a bit, as they are not consistent.
 
-									For example:	
-									TSP654 (STR_T-001) -> TSP650
-									Star TSP143IIIU -> TSP100III									
-								*/
+        For example:	
+        TSP654 (STR_T-001) -> TSP650
+        Star TSP143IIIU -> TSP100III									
+      */
 
       name = name.replace(/^Star\s+/i, "");
       name = name.replace(
@@ -250,6 +249,7 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
       });
 
       if (device) {
+        console.info("Connected to:", device);
         await this.#open(device);
       }
     } catch (error) {
@@ -261,14 +261,16 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
     let devices = await navigator.usb.getDevices();
 
     let device = devices.find(
-      (device) => device.serialNumber == previousDevice.serialNumber
+      (device) => device.serialNumber && device.serialNumber == previousDevice.serialNumber
     );
 
     if (!device) {
       device = devices.find(
         (device) =>
           device.vendorId == previousDevice.vendorId &&
-          device.productId == previousDevice.productId
+          device.productId == previousDevice.productId &&
+          device.manufacturerName == previousDevice.manufacturerName &&
+          device.productName == previousDevice.productName
       );
     }
 
@@ -304,7 +306,7 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
       (e) => e.direction == "in"
     );
 
-    await this.#device.reset();
+    await this.#device.reset?.();
 
     this.#emitter.emit("connected", {
       type: "usb",
@@ -359,7 +361,7 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
       return;
     }
 
-    await this.#device.close();
+    await this.#device.close?.();
 
     this.#device = null;
     this.#profile = null;
