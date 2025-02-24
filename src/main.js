@@ -249,7 +249,6 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
       });
 
       if (device) {
-        console.info("Connected to:", device);
         await this.#open(device);
       }
     } catch (error) {
@@ -306,7 +305,7 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
       (e) => e.direction == "in"
     );
 
-    await this.#device.reset?.();
+    // await this.#device.reset();
 
     this.#emitter.emit("connected", {
       type: "usb",
@@ -361,7 +360,7 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
       return;
     }
 
-    await this.#device.close?.();
+    await this.#device.close();
 
     this.#device = null;
     this.#profile = null;
