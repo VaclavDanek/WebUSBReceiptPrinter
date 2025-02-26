@@ -31,7 +31,7 @@ const DeviceProfiles = [
     interface: 0,
 
     language: "esc-pos",
-    codepageMapping: "zjiang",
+    codepageMapping: "zijang",
   },
 
   /* MPT-II and similar printers */
