@@ -253,6 +253,7 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
       }
     } catch (error) {
       console.log("Could not connect! " + error);
+      throw error;
     }
   }
 
@@ -377,6 +378,7 @@ class WebUSBReceiptPrinter extends ReceiptPrinterDriver {
         );
       } catch (e) {
         console.log(e);
+        throw e;
       }
     }
   }
